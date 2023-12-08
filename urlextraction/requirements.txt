@@ -1,0 +1,7 @@
+langchain
+google-generativeai
+faiss-cpu
+unstructured
+sentence-transformers
+numpy
+django

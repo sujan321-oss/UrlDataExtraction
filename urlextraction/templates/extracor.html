@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://kit.fontawesome.com/ec4aabf67e.js" crossorigin="anonymous"></script>
+      <!-- <script src="extracor.js"></script> -->
+       <link rel="stylesheet" href="/static/css/extractor.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <i class="fa-solid fa-bars navicon" id="navicon" ></i>
+    <br>
+    <div class="heading">
+        <h1>Url Data Extracor!</h1>
+    </div>
+
+
+    <div class="main">
+        <div class="firstform" id="firstform">
+            <form action="" method="post">
+                {% csrf_token %}
+    
+                <div class="urls">
+                    <div class="url1">
+                    <input class="url" id="url1" type="text" placeholder="enter the url1" name="url1" >
+                </div>
+    
+                <div class="url2">
+                    <input class="url" id="url2" type="text" placeholder="enter the url1" name="url2">
+                </div>
+                </div>
+    
+                     <button id="urlsbtn" type="submit">submit url</button>
+
+            </form>
+             
+          
+    
+        </div>
+
+
+    
+    
+        <div class="secondform"  id="secondform">
+            <form action="" method="post" >
+                {% csrf_token %}
+                <div class="question" name='question'>
+                    <input id="question" type="text" name="question" placeholder="ask a question">
+                </div>
+                    <div class="btndiv"> 
+                        <button id="questionbtn" type="submit">Ask question</button>
+                    </div>
+                
+    
+    
+            </form>
+    
+        </div>
+          
+
+        <div class="answerbox" id="answerbox">
+
+            <div class="questionanswer" id="questionanswer">
+
+                <!-- <div class="usermessage">
+                        what is the price of the car
+                </div> -->
+
+                <div class="aimessage">
+                           it may take some time to arrive the first message
+                </div>
+               
+       
+
+            </div>
+        
+             
+        </div>
+
+
+
+
+
+
+
+    </div>
+    
+
+    <script>
+        icon=document.getElementById("navicon")
+        form=document.getElementById("firstform")
+        secondform=document.getElementById("secondform")
+        icon.addEventListener('click',()=>{
+       
+            form.style.transform="translatey(620px)"
+            icon.style.transform="translatex(-43px)"
+         
+            
+
+        })
+
+        document.getElementById("firstform").addEventListener("submit", function(event) {
+   
+            event.preventDefault();
+        
+ 
+            const url1Value = document.getElementById("url1").value;
+            const url2Value = document.getElementById("url2").value;
+            
+        
+           if (url1Value!="" || url2Value!="")
+           {
+              form.style.transform="translatey(-530px)"
+              icon.style.transform="translatex(10px)"
+              secondform.style.display="block"
+              document.getElementById("answerbox").style.visibility = "visible";
+
+   
+              var csrfTokenInput = form.querySelector('[name="csrfmiddlewaretoken"]');
+
+              // Retrieve the CSRF token value
+              var csrfToken = csrfTokenInput.value;
+
+              var xhr=new XMLHttpRequest();
+              xhr.open("POST","/",true)
+              xhr.setRequestHeader("X-CSRFToken",csrfToken)
+
+
+              xhr.onload = function () {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+                }
+            };
+
+
+              var formData=new FormData()
+
+              data=JSON.stringify({"url1":url1Value,"url2":url2Value})
+      
+              formData.append("data",data)
+
+            
+
+
+              xhr.send(formData);
+
+
+
+           
+              
+           }
+        
+            // Additional logic or actions can be added here
+        });
+
+         
+         
+        document.getElementById("secondform").addEventListener("submit",(event)=>{
+            event.preventDefault();
+            const question=document.getElementById("question").value
+
+            document.getElementById("question").value=""
+            var csrfTokenInput = form.querySelector('[name="csrfmiddlewaretoken"]');
+
+            // Retrieve the CSRF token value
+            var csrfToken = csrfTokenInput.value;
+
+            if (question!="")
+            {
+                var humandiv=document.createElement("div")
+                humandiv.classList.add("usermessage")
+                humandiv.textContent=question
+                var container=document.getElementById("questionanswer")
+                container.appendChild(humandiv)
+                container.scrollTop=container.scrollHeight;
+
+
+
+
+                var csrfToken = csrfTokenInput.value;
+
+                var xhr=new XMLHttpRequest();
+                xhr.open("POST","question/",true)
+                xhr.setRequestHeader("X-CSRFToken",csrfToken)
+  
+  
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                      try {
+                          var response = JSON.parse(xhr.responseText);
+                          console.log(response);
+                          var aidiv=document.createElement("div")
+                          aidiv.classList.add("aimessage")
+                          aidiv.textContent=response.message;
+                        
+
+                          var container=document.getElementById("questionanswer")
+                          container.appendChild(aidiv)
+                          container.scrollTop=container.scrollHeight;
+
+
+
+
+                      } catch (error) {
+                          console.error('Error parsing JSON:', error);
+                      }
+                  }
+              };
+  
+  
+                var formData=new FormData()
+  
+                var data2={"question":question}
+                var json_data=JSON.stringify(data2)
+        
+                formData.append("data",json_data)
+
+
+  
+              
+  
+  
+                xhr.send(formData);
+
+
+            }
+
+
+            
+            
+        })
+
+
+
+
+
+
+
+         
+    </script>
+    
+
+    
+</body>
+</html>
